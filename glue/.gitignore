@@ -1,0 +1,5 @@
+# ignoring files
+.DS_Store
+*~
+*.pyc
+*.pid
