@@ -86,7 +86,7 @@ def mkvirtualenv():
     require('hosts')
     put('conf/.bash_profile_source', '~/.bash_profile')
     print('-- mkvirtualenv // chmoding hook.log to avoid permission trouble')
-    _setperms('660', '%s' % os.path.join(env.venv_path, 'hook.log'))
+    _setperms('660', os.path.join(env.venv_path, 'hook.log'))
     _setowner(os.path.join(env.venv_path, 'hook.log'))
     with _settings(warn_only=True):
         if _exists(env.venv_path):
