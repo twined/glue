@@ -5,7 +5,7 @@ import random
 from fabric.api import *
 from fabric.contrib.files import exists as _exists
 from fabric.context_managers import settings as _settings
-from fabric.colors import red, green, yellow
+from fabric.colors import red, green, yellow, cyan
 from fabric.operations import prompt
 from fabric.utils import abort
 
@@ -32,7 +32,7 @@ def syncdb():
     Synchronize database models
     """
     require('hosts')
-    print '-- syncdb // synchronizing db'
+    print(cyan('-- syncdb // synchronizing db'))
     with cd(env.path):
         sudo('FLAVOR=%s %s/bin/python manage.py syncdb --noinput' % (
             env.flavor, env.venv_path), user=env.project_user)
@@ -43,7 +43,7 @@ def migrate():
     Run database migrations
     """
     require('hosts')
-    print '-- migrate // running db migrations'
+    print(cyan('-- migrate // running db migrations'))
     with cd(env.path):
         sudo('FLAVOR=%s %s/bin/python manage.py migrate --noinput' % (
             env.flavor, env.venv_path), user=env.project_user)
@@ -72,7 +72,7 @@ def update():
         restart()
 
         if env.redis_enabled:
-            print '-- redis // increasing cache generation key'
+            print(cyan('-- redis // increasing cache generation key'))
             redis_increase_gen()
 
         if env.memcached_enabled:
@@ -85,7 +85,7 @@ def mkvirtualenv():
     """
     require('hosts')
     put('conf/.bash_profile_source', '~/.bash_profile')
-    print('-- mkvirtualenv // chmoding hook.log to avoid permission trouble')
+    print(cyan('-- mkvirtualenv // chmoding hook.log to avoid permission trouble'))
     _setperms('660', os.path.join(env.venv_path, '..', 'hook.log'))
     _setowner(os.path.join(env.venv_path, '..', 'hook.log'))
     with _settings(warn_only=True):
@@ -138,7 +138,7 @@ def restart():
     """
     require('hosts')
     with cd(env.path):
-        print '-- supervisor // restarting gunicorn process'
+        print(cyan('-- supervisor // restarting gunicorn process'))
         sudo('supervisorctl restart %s' % env.procname)
 
 
@@ -148,7 +148,7 @@ def stop():
     """
     require('hosts')
     with cd(env.path):
-        print '-- supervisor // stopping gunicorn process'
+        print(cyan('-- supervisor // stopping gunicorn process'))
         sudo('supervisorctl stop %s' % env.procname)
 
 
@@ -158,7 +158,7 @@ def start():
     """
     require('hosts')
     with cd(env.path):
-        print '-- supervisor // starting gunicorn process'
+        print(cyan('-- supervisor // starting gunicorn process'))
         sudo('supervisorctl start %s' % env.procname)
 
 
@@ -167,14 +167,12 @@ def _setperms(perms, path):
     chmods path to perms, recursively
     """
     if not perms:
-        print('_setperms: perms cannot be empty')
         abort('_setperms: not enough arguments. perms=%s, path=%s' % (perms, path))
     if not path:
-        print('_setperms: path cannot be empty')
         abort('_setperms: not enough arguments. perms=%s, path=%s' % (perms, path))
 
     require('hosts')
-    print('-- setperms // setting %s on %s [recursively]' % (perms, path))
+    print(cyan('-- setperms // setting %s on %s [recursively]' % (perms, path)))
     sudo('chmod -R %s "%s"' % (perms, path))
 
 
@@ -185,7 +183,7 @@ def _setowner(path=''):
     if not path:
         abort('_setowner: cannot be empty')
     require('hosts')
-    print('-- setowner // owning %s [recursively]' % path)
+    print(cyan('-- setowner // owning %s [recursively]' % path))
     sudo('chown %s:%s -R "%s"' % (env.project_user, env.project_group, path))
 
 
@@ -206,7 +204,7 @@ def syncmedia():
             'public/media'
         )
         #print(red(rsync_command))
-        print('-- syncmedia // syncing from server to local')
+        print(cyan('-- syncmedia // syncing from server to local'))
         print local(rsync_command, capture=False)
 
         rsync_command = r"""rsync -av /sites/%s/public/media/ -e 'ssh -p %s' %s@%s:%s""" % (
@@ -216,7 +214,7 @@ def syncmedia():
             env.media_path.rstrip('/') + '/'
         )
 
-        print('-- syncmedia // syncing from local to server')
+        print(cyan('-- syncmedia // syncing from local to server'))
         print local(rsync_command, capture=False)
 
         _setowner(env.public_path)
@@ -233,9 +231,9 @@ def nukemedia():
     print(red('command: rm -rf %s' % env.media_path))
     print(red('-- WARNING ---------------------------------------'))
     _confirmtask()
-    print('-- nukemedia // ok, deleting files.')
+    print(cyan('-- nukemedia // ok, deleting files.'))
     sudo('rm -rf %s' % env.media_path)
-    print('-- nukemedia // recreating media directory')
+    print(cyan('-- nukemedia // recreating media directory'))
     sudo('mkdir -p %s' % env.media_path, user=env.project_user)
     _setowner(env.media_path)
     _setperms('g+w', env.media_path)
@@ -264,7 +262,7 @@ def flushdb():
     print("")
     _confirmtask()
     with cd(env.path):
-        print('-- flushdb // flushing database')
+        print(cyan('-- flushdb // flushing database'))
         sudo('FLAVOR=%s %s/bin/python manage.py sqlflush | psql %s' % (env.flavor, env.venv_path, env.db_name), user=env.project_user)
 
 
@@ -280,7 +278,7 @@ def loaddata():
     print("")
     _confirmtask()
     with cd(env.path):
-        print('-- loaddata // loading fixtures')
+        print(cyan('-- loaddata // loading fixtures'))
         sudo('FLAVOR=%s %s/bin/python manage.py loaddata fixtures/application_db.json' % (env.flavor, env.venv_path), user=env.project_user)
 
 
@@ -325,7 +323,7 @@ def gitpull():
     """
     require('hosts')
     with cd(env.path):
-        print '-- git // git pull, to make sure we are still at HEAD'
+        print(cyan('-- git // git pull, to make sure we are still at HEAD'))
         sudo('git pull', user=env.project_user)
 
     fixprojectperms()
@@ -362,7 +360,7 @@ def supervisorcfg():
     Links our supervisor config file to the config.d dir
     """
     require('hosts')
-    print('-- supervisorcfg // linking config file to conf.d/')
+    print(cyan('-- supervisorcfg // linking config file to conf.d/'))
     if not _exists('/etc/supervisor/conf.d/%s.conf' % (env.procname)):
         sudo('ln -s %s/conf/supervisord/%s.conf /etc/supervisor/conf.d/%s.conf' % (env.path, env.flavor, env.procname))
     else:
@@ -376,12 +374,12 @@ def nginxcfg():
     Links our nginx config to the sites-enabled dir
     """
     require('hosts')
-    print('-- nginxcfg // linking config file to conf.d/')
+    print(cyan('-- nginxcfg // linking config file to conf.d/'))
     if not _exists('/etc/nginx/sites-enabled/%s' % (env.procname)):
         sudo('ln -s %s/conf/nginx/%s.conf /etc/nginx/sites-enabled/%s' % (env.path, env.flavor, env.procname))
     else:
         print(yellow('-- nginxcfg // %s already exists!' % env.procname))
-    print('-- nginxcfg // reloading nginx config')
+    print(cyan('-- nginxcfg // reloading nginx config'))
     sudo('/etc/init.d/nginx reload')
 
 
@@ -410,7 +408,7 @@ def createdb():
     """
     require('hosts')
     with _settings(warn_only=True):
-        print('-- createdb // creating user %s' % env.db_user)
+        print(cyan('-- createdb // creating user %s' % env.db_user))
         result = sudo('psql -c "CREATE USER %s WITH NOCREATEDB NOCREATEUSER ENCRYPTED PASSWORD \'%s\';"' % (env.db_user, env.db_pass), user='postgres')
         if result.failed:
             if 'already exists' in result:
@@ -418,7 +416,7 @@ def createdb():
             else:
                 abort(red('-- createdb // error in user creation!'))
 
-        print('-- createdb // creating db %s with owner %s' % (env.db_name, env.db_user))
+        print(cyan('-- createdb // creating db %s with owner %s' % (env.db_name, env.db_user)))
         result = sudo('psql -c "CREATE DATABASE %s WITH OWNER %s ENCODING \'UTF-8\'";' % (
             env.db_name, env.db_user), user='postgres')
 
@@ -434,14 +432,14 @@ def deploy():
     Clone the git repository to the correct directory
     """
     require('hosts')
-    print '-- creating %s as %s' % (env.path, env.project_user)
+    print(cyan('-- creating %s as %s' % (env.path, env.project_user)))
     sudo('mkdir -p %s' % env.path, user=env.project_user)
     with cd(env.path):
         if (getattr(env, 'branch', '') == ''):
-            print '-- git // cloning source code into %s' % env.path
+            print(cyan('-- git // cloning source code into %s' % env.path))
             sudo('git clone file:///code/git/%s .' % env.repo, user=env.project_user)
         else:
-            print '-- git // cloning source code branch %s into %s' % (env.branch, env.path)
+            print(cyan('-- git // cloning source code branch %s into %s' % (env.branch, env.path)))
             sudo('git clone file:///code/git/%s -b %s .' % (env.repo, env.branch), user=env.project_user)
     fixprojectperms()
 
@@ -462,7 +460,7 @@ def installreqs():
 
 def flushmemcached():
     "Flush memcached"
-    print '-- memcached // flushing cache'
+    print(cyan('-- memcached // flushing cache'))
     run('echo flush_all | nc 127.0.0.1 11211')
 
 
@@ -474,11 +472,13 @@ def redis_increase_gen():
 
 def nginxreload():
     "Reloads nginxs configuration"
+    print(cyan('-- nginx // reloading'))
     sudo('/etc/init.d/nginx reload')
 
 
 def nginxrestart():
     "Restarts nginxs configuration"
+    print(cyan('-- nginx // restarting'))
     sudo('/etc/init.d/nginx restart')
 
 
@@ -486,5 +486,5 @@ def searchreindex():
     "Rebuild Haystack search index"
     require('hosts')
     with cd(env.path):
-        print "-- rebuilding haystack index"
+        print(cyan('-- searchreindex // rebuilding haystack index'))
         sudo("%s/bin/python manage.py rebuild_index" % env.venv_path, user=env.project_user)
