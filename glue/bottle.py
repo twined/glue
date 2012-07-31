@@ -162,12 +162,15 @@ def start():
         sudo('supervisorctl start %s' % env.procname)
 
 
-def _setperms(perms='', path=''):
+def _setperms(perms, path):
     """
     chmods path to perms, recursively
     """
-    if not perms or path:
-        abort('_setperms: cannot be empty')
+    if not perms:
+        print('_setperms: perms cannot be empty')
+    if not path:
+        print('_setperms: path cannot be empty')
+    abort('_setperms: not enough arguments. perms=%s, path=%s' % (perms, path))
     require('hosts')
     print('-- setperms // setting %s on %s [recursively]' % (perms, path))
     sudo('chmod -R %s "%s"' % (perms, path))
