@@ -168,9 +168,11 @@ def _setperms(perms, path):
     """
     if not perms:
         print('_setperms: perms cannot be empty')
+        abort('_setperms: not enough arguments. perms=%s, path=%s' % (perms, path))
     if not path:
         print('_setperms: path cannot be empty')
-    abort('_setperms: not enough arguments. perms=%s, path=%s' % (perms, path))
+        abort('_setperms: not enough arguments. perms=%s, path=%s' % (perms, path))
+
     require('hosts')
     print('-- setperms // setting %s on %s [recursively]' % (perms, path))
     sudo('chmod -R %s "%s"' % (perms, path))
