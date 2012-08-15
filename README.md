@@ -27,6 +27,15 @@ Add `glue` to `INSTALLED_APPS` in your `conf/settings.py`
 
 Take a look at `glue/settings.py` for the complete settings dict.
 
+DJANGO_SETTINGS_MODULE:
+-----------------------
+**GLUE** needs to access your `DJANGO_SETTINGS_MODULE` environment var,
+you can set it in your virtualenv's `postactivate` hook:
+
+    export DJANGO_SETTINGS_MODULE=yourproject.path.to.settings
+
+The `postactivate` hook can be found in your virtualenv's `bin/` dir.
+
 Management command:
 -------------------
 
