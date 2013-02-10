@@ -438,16 +438,19 @@ def deploy():
     Clone the git repository to the correct directory
     """
     require('hosts')
-    print(cyan('-- creating %s as %s' % (env.path, env.project_user)))
-    sudo('mkdir -p %s' % env.path, user=env.project_user)
-    with cd(env.path):
-        if (getattr(env, 'branch', '') == ''):
-            print(cyan('-- git // cloning source code into %s' % env.path))
-            sudo('git clone file:///code/git/%s .' % env.repo, user=env.project_user)
-        else:
-            print(cyan('-- git // cloning source code branch %s into %s' % (env.branch, env.path)))
-            sudo('git clone file:///code/git/%s -b %s .' % (env.repo, env.branch), user=env.project_user)
-    fixprojectperms()
+    if not _exists(env.path):
+        print(cyan('-- creating %s as %s' % (env.path, env.project_user)))
+        sudo('mkdir -p %s' % env.path, user=env.project_user)
+        with cd(env.path):
+            if (getattr(env, 'branch', '') == ''):
+                print(cyan('-- git // cloning source code into %s' % env.path))
+                sudo('git clone file:///code/git/%s .' % env.repo, user=env.project_user)
+            else:
+                print(cyan('-- git // cloning source code branch %s into %s' % (env.branch, env.path)))
+                sudo('git clone file:///code/git/%s -b %s .' % (env.repo, env.branch), user=env.project_user)
+        fixprojectperms()
+    else:
+        print(cyan('-- directory %s exists, skipping git clone.' % env.path))
 
 
 def clear():
