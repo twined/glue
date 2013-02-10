@@ -86,8 +86,9 @@ def mkvirtualenv():
     require('hosts')
     put('conf/.bash_profile_source', '~/.bash_profile')
     print(cyan('-- mkvirtualenv // chmoding hook.log to avoid permission trouble'))
-    _setperms('660', os.path.join(env.venv_path, '..', 'hook.log'))
-    _setowner(os.path.join(env.venv_path, '..', 'hook.log'))
+    with _settings(warn_only=True):
+        _setperms('660', os.path.join(env.venv_path, '..', 'hook.log'))
+        _setowner(os.path.join(env.venv_path, '..', 'hook.log'))
     with _settings(warn_only=True):
         if _exists(env.venv_path):
             print(yellow('-- mkvirtualenv // virtualenv %s already exists - now removing.' % env.venv_path))
@@ -365,6 +366,11 @@ def supervisorcfg():
         sudo('ln -s %s/conf/supervisord/%s.conf /etc/supervisor/conf.d/%s.conf' % (env.path, env.flavor, env.procname))
     else:
         print(yellow('-- supervisorcfg // %s.conf already exists!' % (env.procname)))
+    print(cyan('-- supervisorcfg // make sure our log directories exist!'))
+    if not _exists('%s/logs/nginx' % env.path):
+        sudo('mkdir -p %s/logs/nginx' % env.path, user=env.project_user)
+    else:
+        print(yellow('-- supervisorcfg // %s/logs already exists!' % (env.path)))
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
 

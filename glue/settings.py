@@ -7,7 +7,9 @@ if os.environ.get('DJANGO_SETTINGS_MODULE'):
     projectmodule = __import__(os.environ.get('DJANGO_SETTINGS_MODULE', ''))
     PROJECT_NAME = projectmodule.__name__
 else:
-    raise ImportError("DJANGO_SETTINGS_MODULE must be available in environment")
+    raise ImportError(
+        "DJANGO_SETTINGS_MODULE must be available in environment. "
+        "We recommend setting it in your venvs postactivate hook.")
 
 GLUE_SETTINGS = {
     'project_name': PROJECT_NAME,
