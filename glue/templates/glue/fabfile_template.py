@@ -75,7 +75,7 @@ def prod():
     # the path to clone our git repo into
     env.path = os.path.join(GLUE_SETTINGS['prod']['project_base'], GLUE_SETTINGS['project_name'])
     # name of the repo we are cloning
-    env.repo = '%s.git' % GLUE_SETTINGS['project_name']
+    env.repo = '%s' % GLUE_SETTINGS['prod']['repo']
     # branch name to clone, or empty for master
     env.branch = GLUE_SETTINGS['prod']['git_branch']
 
@@ -126,7 +126,7 @@ def staging():
     # the path to clone our git repo into
     env.path = os.path.join(GLUE_SETTINGS['staging']['project_base'], GLUE_SETTINGS['project_name'])
     # name of the repo we are cloning
-    env.repo = '%s.git' % GLUE_SETTINGS['project_name']
+    env.repo = '%s' % GLUE_SETTINGS['staging']['repo']
     # branch name to clone, or empty for master
     env.branch = GLUE_SETTINGS['staging']['git_branch']
 
