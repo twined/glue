@@ -70,6 +70,8 @@ def prod():
     # here we build the hosts string
     env.hosts = ['%s@%s:%s' % (env.user, env.host, env.port)]
 
+    # full path to virtualenvs root
+    env.venv_root = GLUE_SETTINGS(['prod']['venv_root'])
     # full path to the virtualenv we want to create
     env.venv_path = os.path.join(GLUE_SETTINGS['prod']['venv_root'], GLUE_SETTINGS['prod']['venv_name'])
     # the path to clone our git repo into
@@ -121,6 +123,8 @@ def staging():
     # here we build the hosts string
     env.hosts = ['%s@%s:%s' % (env.user, env.host, env.port)]
 
+    # full path to virtualenvs root
+    env.venv_root = GLUE_SETTINGS(['prod']['venv_root'])
     # full path to the virtualenv we want to create
     env.venv_path = os.path.join(GLUE_SETTINGS['staging']['venv_root'], GLUE_SETTINGS['staging']['venv_name'])
     # the path to clone our git repo into
