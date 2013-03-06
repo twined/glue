@@ -4,7 +4,7 @@ from setuptools import find_packages
 
 setup(
     name='glue',
-    version='0.1.3',
+    version='0.1.4',
     author=u'Twined',
     author_email='www.twined.net',
     packages=find_packages(),

@@ -84,7 +84,7 @@ def mkvirtualenv():
     Setup a fresh virtualenv.
     """
     require('hosts')
-    put('conf/.bash_profile_source', '~/.bash_profile')
+    put('conf/.bash_profile_source', '/home/%s/.bash_profile' % env.project_user)
     print(cyan('-- mkvirtualenv // chmoding hook.log to avoid permission trouble'))
     with _settings(warn_only=True):
         _setperms('660', os.path.join(env.venv_path, '..', 'hook.log'))
