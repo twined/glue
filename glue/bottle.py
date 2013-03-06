@@ -84,7 +84,11 @@ def mkvirtualenv():
     Setup a fresh virtualenv.
     """
     require('hosts')
-    put('conf/.bash_profile_source', '/home/%s/.bash_profile' % env.project_user)
+    print(cyan('-- mkvirtualenv // uploading bash_profile...'))
+    put('conf/.bash_profile_source', '/home/%s/.bash_profile' % env.project_user, use_sudo=True)
+    print(cyan('-- mkvirtualenv // setting owner and permissions 660'))
+    _setowner(os.path.join('/home', env.project_user, '.bash_profile'))
+    _setperms('660', os.path.join('/home', env.project_user, '.bash_profile'))
     print(cyan('-- mkvirtualenv // chmoding hook.log to avoid permission trouble'))
     with _settings(warn_only=True):
         _setperms('660', os.path.join(env.venv_path, '..', 'hook.log'))
@@ -400,12 +404,14 @@ def createuser():
         if output.failed:
             # no such user, create it.
             sudo('adduser %s' % env.project_user)
-            sudo('usermod -a -G %s %s', env.project_group, env.project_user)
+            sudo('usermod -a -G %s %s' % (env.project_group, env.project_user))
             output = sudo('id %s' % env.project_user)
             if output.failed:
                 abort('createuser: ERROR: could not create user!')
         else:
             print(yellow('-- createuser // user %s already exists.' % env.project_user))
+        print(cyan('-- createuser // add to group'))
+        sudo('usermod -a -G %s %s' % (env.project_group, env.project_user))
 
 
 def createdb():
