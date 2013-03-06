@@ -91,8 +91,8 @@ def mkvirtualenv():
     _setperms('660', os.path.join('/home', env.project_user, '.bash_profile'))
     print(cyan('-- mkvirtualenv // chmoding hook.log to avoid permission trouble'))
     with _settings(warn_only=True):
-        _setperms('660', os.path.join(env.venv_path, '..', 'hook.log'))
-        _setowner(os.path.join(env.venv_path, '..', 'hook.log'))
+        _setperms('660', os.path.join(env.venv_root, 'hook.log'))
+        _setowner(os.path.join(env.venv_root, 'hook.log'))
     with _settings(warn_only=True):
         if _exists(env.venv_path):
             print(yellow('-- mkvirtualenv // virtualenv %s already exists - now removing.' % env.venv_path))
