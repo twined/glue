@@ -456,7 +456,8 @@ def deploy():
                 sudo('git clone file:///code/git/%s -b %s .' % (env.repo, env.branch), user=env.project_user)
         fixprojectperms()
     else:
-        print(cyan('-- directory %s exists, skipping git clone.' % env.path))
+        print(cyan('-- directory %s exists, skipping git clone & updating instead' % env.path))
+        gitpull()
 
 
 def clear():
