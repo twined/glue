@@ -100,8 +100,8 @@ def mkvirtualenv():
     with _settings(warn_only=True):
         if _exists(env.venv_path):
             print(yellow('-- mkvirtualenv // virtualenv %s already exists - now removing.' % env.venv_path))
-            sudo('export WORKON_HOME=/sites/.virtualenvs && source /usr/local/bin/virtualenvwrapper.sh && rmvirtualenv %s' % env.venv_path, user=env.project_user)
-    sudo('export WORKON_HOME=/sites/.virtualenvs && source /usr/local/bin/virtualenvwrapper.sh && mkvirtualenv %s' % env.venv_path, user=env.project_user)
+            sudo('export WORKON_HOME=/sites/.virtualenvs && source /usr/local/bin/virtualenvwrapper.sh && rmvirtualenv %s' % env.venv_name, user=env.project_user)
+    sudo('export WORKON_HOME=/sites/.virtualenvs && source /usr/local/bin/virtualenvwrapper.sh && mkvirtualenv %s' % env.venv_name, user=env.project_user)
 
 
 def bootstrap():
