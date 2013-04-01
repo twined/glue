@@ -474,7 +474,7 @@ def installreqs():
     require('hosts')
     with cd(env.path):
         sudo('export WORKON_HOME=/sites/.virtualenvs && source /usr/local/bin/virtualenvwrapper.sh && workon %s && pip install -r ./requirements/%s.pip' % (
-            env.procname, env.flavor), user=env.project_user)
+            env.venv_name, env.flavor), user=env.project_user)
 
 
 def flushmemcached():
