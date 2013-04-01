@@ -4,7 +4,7 @@ import random
 
 from fabric.api import *
 from fabric.contrib.files import exists as _exists
-from fabric.context_managers import settings as _settings
+from fabric.context_managers import settings as _settings, shell_env
 from fabric.colors import red, green, yellow, cyan
 from fabric.operations import prompt
 from fabric.utils import abort
@@ -89,6 +89,10 @@ def mkvirtualenv():
     print(cyan('-- mkvirtualenv // setting owner and permissions 660'))
     _setowner(os.path.join('/home', env.project_user, '.bash_profile'))
     _setperms('660', os.path.join('/home', env.project_user, '.bash_profile'))
+    print(cyan('-- mkvirtualenv // running virtualenvwrapper.sh'))
+    sudo('export WORKON_HOME=/sites/.virtualenvs', user=env.project_user)
+    with shell_env(WORKON_HOME='/sites/.virtualenvs'):
+        sudo('source /usr/local/bin/virtualenvwrapper.sh', user=env.project_user)
     print(cyan('-- mkvirtualenv // chmoding hook.log to avoid permission trouble'))
     with _settings(warn_only=True):
         _setperms('660', os.path.join(env.venv_root, 'hook.log'))
@@ -96,8 +100,8 @@ def mkvirtualenv():
     with _settings(warn_only=True):
         if _exists(env.venv_path):
             print(yellow('-- mkvirtualenv // virtualenv %s already exists - now removing.' % env.venv_path))
-            sudo('rmvirtualenv %s' % env.procname, user=env.project_user)
-    sudo('mkvirtualenv --no-site-packages %s' % env.procname, user=env.project_user)
+            sudo('export WORKON_HOME=/sites/.virtualenvs && source /usr/local/bin/virtualenvwrapper.sh && rmvirtualenv %s' % env.procname, user=env.project_user)
+    sudo('export WORKON_HOME=/sites/.virtualenvs && source /usr/local/bin/virtualenvwrapper.sh && mkvirtualenv --no-site-packages %s' % env.procname, user=env.project_user)
 
 
 def bootstrap():
@@ -459,7 +463,6 @@ def deploy():
         print(cyan('-- directory %s exists, skipping git clone & updating instead' % env.path))
         gitpull()
 
-
 def clear():
     """
     Deletes the project directory
@@ -470,7 +473,7 @@ def installreqs():
     "Install the required packages from the requirements file using pip"
     require('hosts')
     with cd(env.path):
-        sudo('workon %s && pip install -r ./requirements/%s.pip' % (
+        sudo('export WORKON_HOME=/sites/.virtualenvs && source /usr/local/bin/virtualenvwrapper.sh && workon %s && pip install -r ./requirements/%s.pip' % (
             env.procname, env.flavor), user=env.project_user)
 
 
