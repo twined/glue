@@ -23,7 +23,7 @@ GLUE_SETTINGS = {
         'db_user': PROJECT_NAME,
         'db_pass': 'database password',
         'venv_root': '/sites/.virtualenvs',
-        'venv_name': PROJECT_NAME,
+        'venv_name': '%s_prod' % PROJECT_NAME,
         'project_base': '/sites/prod',
         'repo': PROJECT_NAME,
         'git_branch': '1.4',
