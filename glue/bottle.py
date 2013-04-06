@@ -10,7 +10,7 @@ from fabric.operations import prompt
 from fabric.utils import abort
 
 
-VERSION_NUMBER = '0.9.6'
+VERSION_NUMBER = '1.0.0'
 
 
 def _get_version():
@@ -122,6 +122,7 @@ def bootstrap():
     createdb()
     supervisorcfg()
     nginxcfg()
+    logrotatecfg()
     syncdb()
     migrate()
     collectstatic()
@@ -374,11 +375,7 @@ def supervisorcfg():
         sudo('ln -s %s/conf/supervisord/%s.conf /etc/supervisor/conf.d/%s.conf' % (env.path, env.flavor, env.procname))
     else:
         print(yellow('-- supervisorcfg // %s.conf already exists!' % (env.procname)))
-    print(cyan('-- supervisorcfg // make sure our log directories exist!'))
-    if not _exists('%s/logs/nginx' % env.path):
-        sudo('mkdir -p %s/logs/nginx' % env.path, user=env.project_user)
-    else:
-        print(yellow('-- supervisorcfg // %s/logs already exists!' % (env.path)))
+
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
 
@@ -393,8 +390,25 @@ def nginxcfg():
         sudo('ln -s %s/conf/nginx/%s.conf /etc/nginx/sites-enabled/%s' % (env.path, env.flavor, env.procname))
     else:
         print(yellow('-- nginxcfg // %s already exists!' % env.procname))
+    print(cyan('-- nginxcfg // make sure our log directories exist!'))
+    if not _exists('%s/logs/nginx' % env.path):
+        sudo('mkdir -p %s/logs/nginx' % env.path, user=env.project_user)
+    else:
+        print(yellow('-- nginxcfg // %s/logs already exists!' % (env.path)))
     print(cyan('-- nginxcfg // reloading nginx config'))
     sudo('/etc/init.d/nginx reload')
+
+
+def logrotatecfg():
+    """
+    Links our logrotate config file to the config.d dir
+    """
+    require('hosts')
+    print(cyan('-- logrotateconf // linking config file to conf.d/'))
+    if not _exists('/etc/logrotate.d/%s.conf' % (env.procname)):
+        sudo('ln -s %s/conf/logrotate/%s.conf /etc/logrotate.d/%s.conf' % (env.path, env.flavor, env.procname))
+    else:
+        print(yellow('-- logrotateconf // %s.conf already exists!' % (env.procname)))
 
 
 def createuser():
