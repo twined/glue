@@ -121,7 +121,7 @@ def upload_virtualenv_vendors():
     Uploads virtualenv vendors
     """
     print(cyan('-- upload_virtualenv_vendors // uploading node_modules'))
-    put('vendors/virtualenv/node_modules' % env.project_name, '%s/' % env.venv_path, use_sudo=True)
+    put('vendors/virtualenv/node_modules', '%s/' % env.venv_path, use_sudo=True)
     print(cyan('-- upload_virtualenv_vendors // chowning...'))
     _setowner(os.path.join(env.venv_path, 'node_modules'))
     print(cyan('-- upload_virtualenv_vendors // chmoding'))
