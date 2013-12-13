@@ -126,7 +126,7 @@ def upload_virtualenv_vendors():
         print(cyan('-- upload_virtualenv_vendors // chowning...'))
         _setowner(os.path.join(env.venv_path, 'node_modules'))
         print(cyan('-- upload_virtualenv_vendors // chmoding'))
-        _setperms('660', os.path.join(env.venv_path, 'node_modules'))
+        _setperms('770', os.path.join(env.venv_path, 'node_modules'))
 
 
 def bootstrap():
