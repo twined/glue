@@ -105,6 +105,8 @@ def prod():
     env.public_path = os.path.join(env.path, GLUE_SETTINGS['prod']['public_path'])
     # full path to our project's media directory
     env.media_path = os.path.join(env.public_path, GLUE_SETTINGS['prod']['media_path'])
+    # application name
+    env.project_name = GLUE_SETTINGS['project_name']
 
 
 def staging():
@@ -160,3 +162,5 @@ def staging():
     env.public_path = os.path.join(env.path, GLUE_SETTINGS['staging']['public_path'])
     # full path to our project's media directory
     env.media_path = os.path.join(env.public_path, GLUE_SETTINGS['staging']['media_path'])
+    # application name
+    env.project_name = GLUE_SETTINGS['project_name']

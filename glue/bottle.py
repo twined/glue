@@ -10,7 +10,7 @@ from fabric.operations import prompt
 from fabric.utils import abort
 
 
-VERSION_NUMBER = '1.0.0'
+VERSION_NUMBER = '1.0.1'
 
 
 def _get_version():
@@ -104,6 +104,18 @@ def mkvirtualenv():
     sudo('export WORKON_HOME=/sites/.virtualenvs && source /usr/local/bin/virtualenvwrapper.sh && mkvirtualenv %s' % env.venv_name, user=env.project_user)
 
 
+def upload_secrets():
+    """
+    Uploads secrets.cfg
+    """
+    print(cyan('-- upload_secrets // uploading secrets.cfg...'))
+    put('%s/conf/env/secrets.cfg' % env.project_name, '%s/conf/env/secrets.cfg' % env.path, use_sudo=True)
+    print(cyan('-- upload_secrets // chowning...'))
+    _setowner(os.path.join(env.path, 'conf/env/secrets.cfg'))
+    print(cyan('-- upload_secrets // chmoding'))
+    _setperms('660', os.path.join(env.path, 'conf/env/secrets.cfg'))
+
+
 def bootstrap():
     """
     Bootstraps and provisions project on host
@@ -118,6 +130,7 @@ def bootstrap():
     createuser()
     deploy()
     mkvirtualenv()
+    upload_secrets()
     installreqs()
     createdb()
     supervisorcfg()
