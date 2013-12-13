@@ -111,9 +111,9 @@ def upload_secrets():
     print(cyan('-- upload_secrets // uploading secrets.cfg...'))
     put('%s/conf/env/secrets.cfg' % env.project_name, '%s/%s/conf/env/secrets.cfg' % (env.path, env.project_name), use_sudo=True)
     print(cyan('-- upload_secrets // chowning...'))
-    _setowner(os.path.join(env.path, 'conf/env/secrets.cfg'))
+    _setowner(os.path.join(env.path, env.project_name, 'conf/env/secrets.cfg'))
     print(cyan('-- upload_secrets // chmoding'))
-    _setperms('660', os.path.join(env.path, 'conf/env/secrets.cfg'))
+    _setperms('660', os.path.join(env.path, env.project_name, 'conf/env/secrets.cfg'))
 
 
 def bootstrap():
