@@ -109,7 +109,7 @@ def upload_secrets():
     Uploads secrets.cfg
     """
     print(cyan('-- upload_secrets // uploading secrets.cfg...'))
-    put('%s/conf/env/secrets.cfg' % env.project_name, '%s/conf/env/secrets.cfg' % env.path, use_sudo=True)
+    put('%s/conf/env/secrets.cfg' % env.project_name, '%s/%s/conf/env/secrets.cfg' % (env.path, env.project_name), use_sudo=True)
     print(cyan('-- upload_secrets // chowning...'))
     _setowner(os.path.join(env.path, 'conf/env/secrets.cfg'))
     print(cyan('-- upload_secrets // chmoding'))
