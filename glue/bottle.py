@@ -116,6 +116,18 @@ def upload_secrets():
     _setperms('660', os.path.join(env.path, env.project_name, 'conf/env/secrets.cfg'))
 
 
+def upload_virtualenv_vendors():
+    """
+    Uploads virtualenv vendors
+    """
+    print(cyan('-- upload_virtualenv_vendors // uploading node_modules'))
+    put('vendors/virtualenv/node_modules' % env.project_name, '%s/' % env.venv_path, use_sudo=True)
+    print(cyan('-- upload_virtualenv_vendors // chowning...'))
+    _setowner(os.path.join(env.venv_path, 'node_modules'))
+    print(cyan('-- upload_virtualenv_vendors // chmoding'))
+    _setperms('660', os.path.join(env.venv_path, 'node_modules'))
+
+
 def bootstrap():
     """
     Bootstraps and provisions project on host
@@ -130,6 +142,7 @@ def bootstrap():
     createuser()
     deploy()
     mkvirtualenv()
+    upload_virtualenv_vendors()
     upload_secrets()
     installreqs()
     createdb()
