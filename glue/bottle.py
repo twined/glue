@@ -281,7 +281,7 @@ def putdata():
     Grabs a json dump of local dev database and uploads it to server
     """
     require('hosts')
-    print local('FLAVOR=dev ./manage.py dumpdata --indent=4 > fixtures/application_db.json', capture=False)
+    print local('FLAVOR=dev ./manage.py dumpdata > fixtures/application_db.json', capture=False)
     _setperms('g+w', '%s/fixtures' % env.path)
     put('fixtures/application_db.json', '%s/fixtures/application_db.json' % env.path, use_sudo=True)
     _setowner(env.media_path)
@@ -372,6 +372,7 @@ def fixprojectperms():
     """
     require('hosts')
     _setowner(env.path)
+    logrotatecfg()
 
 
 def _success():
@@ -431,11 +432,20 @@ def logrotatecfg():
     Links our logrotate config file to the config.d dir
     """
     require('hosts')
+    logrotate_src = "%s/etc/logrotate/%s.conf" % (env.path, env.flavor)
     print(cyan('-- logrotateconf // linking config file to conf.d/'))
     if not _exists('/etc/logrotate.d/%s.conf' % (env.procname)):
-        sudo('ln -s %s/conf/logrotate/%s.conf /etc/logrotate.d/%s.conf' % (env.path, env.flavor, env.procname))
+        sudo('ln -s %s /etc/logrotate.d/%s.conf' % (logrotate_src, env.procname))
     else:
         print(yellow('-- logrotateconf // %s.conf already exists!' % (env.procname)))
+
+    # set permission to 644
+    print(cyan('-- setperms // setting logrotate conf to 644'))
+    sudo('chmod %s "%s"' % (perms, logrotate_src))
+
+    # set owner to root
+    print(cyan('-- setowner // setting logrotate owner to root'))
+    sudo('chown root:wheel "%s"' % logrotate_src)
 
 
 def createuser():
